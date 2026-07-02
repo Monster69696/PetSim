@@ -1,0 +1,158 @@
+local Players = game:GetService("Players")
+
+local player = Players.LocalPlayer
+
+-- Area bounds
+local MIN_X = 1347
+local MAX_X = 1500
+local MIN_Z = -32056
+local MAX_Z = -31950
+
+local Y = 16.24
+local STEP = 10
+local STEP_Z = 30
+local WAIT = 0.01
+
+-- Base/Return position
+local BASE_POS = Vector3.new(1346.9329833984375, 16.239492416381836, -32054.794921875)
+
+local running = false
+
+local function getHRP()
+    local character = player.Character or player.CharacterAdded:Wait()
+    return character:WaitForChild("HumanoidRootPart")
+end
+
+local function walkTo(position)
+    local hrp = getHRP()
+    local humanoid = hrp.Parent:WaitForChild("Humanoid")
+    humanoid.WalkSpeed = 100
+    humanoid:MoveTo(position)
+    humanoid.MoveToFinished:Wait()
+end
+
+-- Get Cost label reference
+local costLabel = workspace:FindFirstChild("__THINGS"):FindFirstChild("__INSTANCE_CONTAINER"):FindFirstChild("Active"):FindFirstChild("SoccerEvent"):FindFirstChild("INTERACT"):FindFirstChild("Yeet Event Sign"):FindFirstChild("Main"):FindFirstChild("SurfaceGui"):FindFirstChild("Panel"):FindFirstChild("Amount"):FindFirstChild("Cost")
+
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Name = "OrbFarm"
+gui.ResetOnSpawn = false
+gui.Parent = game.CoreGui
+
+local btn = Instance.new("TextButton")
+btn.Size = UDim2.fromOffset(170,45)
+btn.Position = UDim2.new(0.5,-85,0.86,0)
+btn.Text = "Orb Farm : OFF"
+btn.TextScaled = true
+btn.Parent = gui
+
+local label = Instance.new("TextLabel")
+label.Size = UDim2.new(0, 200, 0, 50)
+label.Position = UDim2.new(0.5, -100, 0, 20)
+label.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+label.BackgroundTransparency = 0.3
+label.TextColor3 = Color3.fromRGB(0, 255, 100)
+label.TextSize = 24
+label.Font = Enum.Font.GothamBold
+label.Text = "0/0"
+label.Parent = gui
+
+-- Function to check if cost reached threshold
+local function checkCostThreshold()
+    if costLabel then
+        local text = costLabel.Text
+        -- Parse "2,720/10,000" format
+        local parts = text:split("/")
+        if #parts == 2 then
+            local current = tonumber(parts[1]:gsub(",", ""))
+            local max = tonumber(parts[2]:gsub(",", ""))
+            
+            if current and max and current >= 9975 then
+                return true
+            end
+        end
+    end
+    return false
+end
+
+-- Update cost label display
+task.spawn(function()
+    while true do
+        task.wait(0.5)
+        if costLabel then
+            label.Text = costLabel.Text
+        end
+    end
+end)
+
+btn.MouseButton1Click:Connect(function()
+    running = not running
+
+    btn.Text = running and "Orb Farm : ON" or "Orb Farm : OFF"
+
+    if running then
+        task.spawn(function()
+            local hrp = getHRP()
+            local humanoid = hrp.Parent:WaitForChild("Humanoid")
+            humanoid.WalkSpeed = 100
+            
+            while running do
+                -- Check if cost threshold reached
+                if checkCostThreshold() then
+                    running = false
+                    btn.Text = "Orb Farm : OFF"
+                    break
+                end
+
+                -- Start from MIN_Z, go upward
+                local z = MIN_Z
+                local goingUp = true
+                
+                while z <= MAX_Z and running do
+                    if checkCostThreshold() then
+                        running = false
+                        btn.Text = "Orb Farm : OFF"
+                        break
+                    end
+
+                    if goingUp then
+                        -- Go LEFT to RIGHT
+                        for x = MIN_X, MAX_X, STEP do
+                            if not running or checkCostThreshold() then break end
+                            walkTo(Vector3.new(x, Y, z))
+                            task.wait(WAIT)
+                        end
+                    else
+                        -- Go RIGHT to LEFT
+                        for x = MAX_X, MIN_X, -STEP do
+                            if not running or checkCostThreshold() then break end
+                            walkTo(Vector3.new(x, Y, z))
+                            task.wait(WAIT)
+                        end
+                    end
+
+                    z = z + STEP_Z
+                    goingUp = not goingUp
+                end
+
+                if not running or checkCostThreshold() then break end
+
+                -- After complete sweep, return to BASE position using shortest path
+                walkTo(BASE_POS)
+                task.wait(0.1)
+            end
+        end)
+    else
+        local hrp = getHRP()
+        local humanoid = hrp.Parent:WaitForChild("Humanoid")
+        humanoid.WalkSpeed = 16
+
+        hrp.CFrame = CFrame.new(
+            1545.698974609375, 16.49872398376465, -32007.5078125,
+            -0.081334687769413, -2.6244270756592414e-08, -0.9966868162155151,
+            -1.2753682554489387e-08, 1, -2.529074549784127e-08,
+            0.9966868162155151, 1.0654412463395602e-08, -0.081334687769413
+        )
+    end
+end)
