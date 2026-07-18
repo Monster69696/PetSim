@@ -10,10 +10,10 @@ local folders = {
 }
 
 local removeClasses = {
-    Part = true,
+    Part = false,
     MeshPart = true,
     SurfaceLight = true,
-    SurfaceGui = true,
+    SurfaceGui = false,
     BillboardGui = true,
     ImageLabel = true,
     TextLabel = true,
