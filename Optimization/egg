@@ -11,12 +11,12 @@ local folders = {
 
 local removeClasses = {
     Part = false,
-    MeshPart = false,
+    MeshPart = true,
     SurfaceLight = true,
     SurfaceGui = false,
     BillboardGui = true,
     ImageLabel = true,
-    TextLabel = true,
+    TextLabel = false,
     TextButton = true,
     Frame = true,
     UIStroke = true,
