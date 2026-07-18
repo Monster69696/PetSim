@@ -11,7 +11,7 @@ local folders = {
 
 local removeClasses = {
     Part = false,
-    MeshPart = true,
+    MeshPart = false,
     SurfaceLight = true,
     SurfaceGui = false,
     BillboardGui = true,
