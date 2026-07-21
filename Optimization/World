@@ -7,7 +7,7 @@ local REMOVE_PARTS               = true -- Hide/delete loose Parts & UnionOperat
 local REMOVE_EFFECTS             = true
 local REMOVE_TEXTURES            = true
 local REMOVE_LIGHTS              = true
-local HIDE_INSTEAD_OF_DESTROY    = false -- safer
+local HIDE_INSTEAD_OF_DESTROY    = true -- safer
 
 local map = workspace:FindFirstChild("Map") or workspace:FindFirstChild("Map2") or workspace:FindFirstChild("Map3") or workspace:FindFirstChild("Map4")
 
