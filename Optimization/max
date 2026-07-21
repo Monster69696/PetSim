@@ -1,0 +1,9 @@
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Monster69696/PetSim/main/Optimization/egg"))()
+
+task.wait(2)
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Monster69696/PetSim/main/Optimization/World"))()
+
+task.wait(2)
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Monster69696/PetSim/main/Optimization/Breakable"))()
